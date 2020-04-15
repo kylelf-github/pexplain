@@ -1,5 +1,5 @@
 
-#from array import array
+# from array import array
 import re
 import sys
 

@@ -1,14 +1,22 @@
 
-# from array import array
+#from array import array
 import re
 import sys
 
 #def main (argv): 
 def main (): 
-	file=sys.argv
+	n = len(sys.argv) 
+	print("n",n )
+	if n > 1 :
+		filename="plans/" + sys.argv[1]
+		print("filename ", filename)
+	else:
+		print("no file given")
+		exit()
 	# read file
 	#file = open("plans/01CD.p","r")
-	file = open("plans/X5SA.p","r")
+	#file = open("plans/X5SA.p","r")
+	file = open(filename,"r")
 	lines = file.readlines()
 	file.close()
 
@@ -92,7 +100,11 @@ def main ():
 				cdepth+=1
 			print("->"),
 			print(cost_at_node[parent]),
-			print(cost_children[parent])
+			print(cost_children[parent]),
+			print(round(float(cost_at_node[parent])-float(cost_children[parent]),2)),
+			print(pctcost),
+			pctcost=round(100*(float(cost_at_node[parent])-(float(cost_children[parent])))/float(total_cost),2)
+			print(pctcost)
 			print(buffer[parent+1])
 		parent+=1;
 

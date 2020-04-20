@@ -30,6 +30,7 @@ def node_costs():
 
 def main (): 
 	debug=0
+	use_time=1
 	n = len(sys.argv) 
 	print("n",n )
 	if n > 1 :
@@ -69,7 +70,10 @@ def main ():
 		costs = line.find ("cost")
 		# total_cost
 		if costs != -1 & depth == -1 :
-			total_cost=line.split("..")[1].split()[0]
+			if use_time == 1:
+				total_cost=line.split("..")[2].split()[0]
+			else:
+				total_cost=line.split("..")[1].split()[0]
 			print("first cost ", total_cost)
 			cost=total_cost
 
@@ -83,7 +87,28 @@ def main ():
 
 			# get cost
 			# split after first .., take right, split on blanks, take first string
-			cost=line.split("..")[1].split()[0]
+			if use_time == 1:
+			# cost for time is time X loops
+			# ->  Index Scan using xxx on livestr cost=0.28..8.41 rows=1 width=38) (actual time=0.010..0.011 rows=1 loops=91)
+				# if line has "never executed" then there are no costs
+                                if  re.search("never executed",line) :
+					cost=0
+                                else:
+					cost=line.split("..")[2].split()[0]
+					loops=line.split("loops=")[1].split(")")[0]
+					print("cost"),
+					print(cost),
+					print("loops"),
+					print(loops),
+					sum_cost=float(cost)*float(loops)
+					print("sum_cost"),
+					print(sum_cost)
+					cost=sum_cost
+			else:
+				cost=line.split("..")[1].split()[0]
+			print("cost "),
+			print(cost)
+			#cost=cost.split("..")[1].split()[0]
 
         		node_cnt+=1
 

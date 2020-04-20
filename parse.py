@@ -29,7 +29,7 @@ def node_costs():
 	i=1
 
 def main (): 
-	debug=1
+	debug=0
 	n = len(sys.argv) 
 	print("n",n )
 	if n > 1 :
@@ -139,6 +139,7 @@ def main ():
 	while parent < node_cnt-1:
 		pctcost_node=round(100*float(cost_at_node[parent])/float(total_cost),2)
 		if pctcost_node >= 10.0 :
+			print("---------") 
 			print("parent node"), 
 			print(parent), 
 			print("depth at parent "), 
@@ -148,7 +149,7 @@ def main ():
 				print("    "),
 				cdepth+=1
 			print(">>"),
-			#pctcost_node_delta=round(100*(float(cost_at_node[parent])-(float(cost_children[parent])))/float(total_cost),2)
+			pctcost_node_delta=round(100*(float(cost_at_node[parent])-(float(cost_children[parent])))/float(total_cost),2)
 			# cost_at_node is a dictonary
 			# cost_children is a dictonary
 			# cost_children is a dictonary
@@ -158,6 +159,8 @@ def main ():
                         	print("Filter")
 				if pctcost_node_delta > 10.0 :
 					print("missing index")
+                	# there are other types of Hash but not sure these rules apply, I don't see them applying for no
+                	#if  re.search(r"[\n\r]*  *->  Hash",buffer[parent]):
                 	if  re.search(r"[\n\r]*  *->  Hash Join",buffer[parent]):
                 		i=0
                 		print("#children :"),
@@ -179,11 +182,16 @@ def main ():
 			        cost_node_B2=float(cost_at_node[parent+3])-(float(cost_children[parent+3]))
 			        pctcost_node_B=round(100*(cost_node_B1+cost_node_B2)/float(total_cost),2)
 			        pctcost_node_A=round(100*(cost_node_A)/float(total_cost),2)
-                		if  re.search(r"[\n\r]*  *->  Seq Scan",buffer[parent+1]):
+                		#if  re.search(r"[\n\r]*  *->  Seq Scan",buffer_child[parent,0]):
+                		#if  re.search(r"[\n\r]*  *->  Seq Scan",buffer_child[parent,0]):
+				if  re.search(r"[\n\r]*  *->  Seq Scan",buffer[parent+1]):
 					if pctcost_node_A >= 10.0  and pctcost_node_A >= pctcost_node_B:
 						print("******************** Hash Join missing Join index 1111")
 						tempcost = pctcost_node_delta
-                		if  re.search(r"[\n\r]*  *->  Seq Scan",buffer[parent+3]) :
+				#noden_child[parent,nchildren]=child
+                		#if  re.search(r"[\n\r]*  *->  Seq Scan",buffer[parent+3]) :
+				childn=noden_child[parent,1]
+                		if  re.search(r"[\n\r]*  *->  Seq Scan",buffer[childn]) :
 					print("******************** Hash Join missing second Join index ")
 					print_costs(cost_at_node,parent,cost_children,total_cost)
 					print(buffer[parent+3])
@@ -218,18 +226,22 @@ def main ():
 				        cost_node_B2=0
 			        pctcost_node_B=round(100*(cost_node_B1+cost_node_B2)/float(total_cost),2)
 			        pctcost_node_A=round(100*(cost_node_A)/float(total_cost),2)
-                		if  re.search(r"[\n\r]*  *->  Seq Scan",buffer[parent+1]):
+                		#if  re.search(r"[\n\r]*  *->  Seq Scan",buffer[parent+1]):
+                		if  re.search(r"[\n\r]*  *->  Seq Scan",buffer_child[parent,0]):
 					if pctcost_node_A >= 10.0  and pctcost_node_A >= pctcost_node_B:
 						print("******************** Nested Loops missing Join index 1111")
 						tempcost = pctcost_node_delta
-                		if  re.search(r"[\n\r]*  *->  Seq Scan",buffer[parent+2]) :
-					print("******************** missing second Join index ")
+                		if  re.search(r"[\n\r]*  *->  Seq Scan",buffer_child[parent,1]) :
+					print("******************** Nested Loops missing second Join index ")
 					print_costs(cost_at_node,parent,cost_children,total_cost)
 					print(buffer[parent+2])
 					#if pctcost_node_delta >= 10.0 and pctcost_node_delta > tempcost:
-					if pctcost_node_B >= 10.0 and pctcost_node_B >= pctcost_node_A:
+					# in nested, loops, even if second node is cheap, if total nested looops is expenisive
+					#  means that second node is excuted alot, so is we can optimize it we should
+					if pctcost_node_B >= 0.0 and pctcost_node_B >= pctcost_node_A:
 						print("******************** Nested Loops missing Join index 222")
-						print(buffer[parent+3])
+						#print(buffer[parent+2])
+						print(buffer_child[parent,1])
 
 		parent+=1;
 
